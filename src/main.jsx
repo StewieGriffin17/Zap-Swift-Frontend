@@ -10,7 +10,7 @@ Aos.init();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen">
       <div className="font-urbanist max-w-[1500px] mx-auto pt-1 sm:pt-2 ">
         <RouterProvider router={router} />
       </div>

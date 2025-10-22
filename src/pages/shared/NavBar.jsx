@@ -66,7 +66,7 @@ const NavBar = () => {
           <button className="hidden sm:flex btn border border-gray-300 bg-white text-gray-800 text-sm md:text-base lg:text-[16px] font-semibold px-3 md:px-4 lg:px-6 py-2 lg:py-3 rounded-lg lg:rounded-xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 min-h-0 h-auto">
             Sign In
           </button>
-          <button className="hidden lg:flex btn bg-[#CAEB66] text-black text-sm md:text-base lg:text-[16px] font-semibold px-3 md:px-4 lg:px-6 py-2 lg:py-3 hover:bg-lime-400 transition-all duration-200 rounded-lg lg:rounded-xl shadow-md hover:shadow-lg min-h-0 h-auto">
+          <button className="hidden lg:flex btn bg-[#CFEA68] text-black text-sm md:text-base lg:text-[16px] font-semibold px-3 md:px-4 lg:px-6 py-2 lg:py-3 hover:bg-lime-400 transition-all duration-200 rounded-lg lg:rounded-xl shadow-md hover:shadow-lg min-h-0 h-auto">
             Be a Rider
           </button>
 

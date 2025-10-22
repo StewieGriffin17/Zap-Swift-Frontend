@@ -20,7 +20,7 @@ const BrandsSection = () => {
   ];
 
   return (
-    <section className="py-10 overflow-hidden">
+    <section className="py-10 overflow-hidden mx-auto max-w-[1280px]">
       <div className="text-center mb-10 px-4">
         <h2 className="font-extrabold text-xl sm:text-2xl text-[#03373D]">
           We've helped thousands of sales teams
