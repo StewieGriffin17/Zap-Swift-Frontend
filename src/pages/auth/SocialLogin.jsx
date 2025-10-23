@@ -1,19 +1,26 @@
 import React from "react";
+import { useNavigate, useLocation } from "react-router";
 import useAuth from "../../hooks/useAuth";
 
 const SocialLogin = () => {
   const { signInGoogle } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // get the route user came from or default to home
+  const from = location.state?.from?.pathname || "/";
 
   const handleGoogleSignin = () => {
     signInGoogle()
       .then((res) => {
-        console.log(res.user);
+        console.log("Google user:", res.user);
+        navigate(from, { replace: true });
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Google sign-in failed:", error);
       });
   };
-  
+
   return (
     <div>
       {/* Or divider */}
@@ -47,7 +54,7 @@ const SocialLogin = () => {
             d="M43.611 20.083H42V20H24v8h11.303c-1.078 3.213-4.554 7-11.303 7-5.196 0-9.6-3.317-11.214-7.946l-6.5 5.008C9.593 38.556 16.24 43 24 43c11.045 0 20-8.955 20-20 0-1.341-.138-2.653-.389-3.917z"
           />
         </svg>
-        Continue with google
+        Continue with Google
       </button>
     </div>
   );

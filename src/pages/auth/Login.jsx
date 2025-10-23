@@ -1,7 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import SocialLogin from "./SocialLogin";
+import useAuth from "../../hooks/useAuth";
 
 const Login = () => {
   const {
@@ -10,8 +11,22 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // get the route user came from, default to home
+  const from = location.state?.from?.pathname || "/";
+
   const onSubmit = (data) => {
-    console.log(data);
+    signIn(data.email, data.password)
+      .then((result) => {
+        console.log("Logged in:", result.user);
+        navigate(from, { replace: true }); // go back to previous page
+      })
+      .catch((error) => {
+        console.error("Login failed:", error);
+      });
   };
 
   return (
@@ -75,10 +90,15 @@ const Login = () => {
         {/* Register link */}
         <p className="mt-3 text-sm text-gray-600">
           Don't have any account?{" "}
-          <Link to="/signup" className="font-semibold text-[#7AC70C] hover:underline">Register</Link>
+          <Link
+            to="/signup"
+            className="font-semibold text-[#7AC70C] hover:underline"
+          >
+            Register
+          </Link>
         </p>
 
-        <SocialLogin></SocialLogin>
+        <SocialLogin />
       </form>
     </div>
   );

@@ -1,9 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { FiUser } from "react-icons/fi";
+import { useNavigate, Link } from "react-router";
 import signup_img from "../../assets/image-upload-icon.png";
 import useAuth from "../../hooks/useAuth";
-import { Link } from "react-router";
 import SocialLogin from "./SocialLogin";
 
 const Signup = () => {
@@ -14,14 +13,17 @@ const Signup = () => {
   } = useForm();
 
   const { createUser } = useAuth();
+  const navigate = useNavigate(); // navigation hook
 
   const onSubmit = (data) => {
     createUser(data.email, data.password)
       .then((result) => {
-        console.log(result.user);
+        console.log("User created:", result.user);
+        // ✅ Redirect to login page after successful signup
+        navigate("/login");
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Signup failed:", error);
       });
   };
 
@@ -36,7 +38,7 @@ const Signup = () => {
       {/* Avatar placeholder */}
       <div className="mt-5 mb-2">
         <button className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-          <img src={signup_img} alt="" />
+          <img src={signup_img} alt="Upload icon" />
         </button>
       </div>
 
@@ -99,10 +101,15 @@ const Signup = () => {
         {/* Login link */}
         <p className="mt-3 text-sm text-gray-600">
           Already have an account?{" "}
-          <Link to="/login" className="font-semibold text-[#7AC70C] hover:underline">Login</Link>
+          <Link
+            to="/login"
+            className="font-semibold text-[#7AC70C] hover:underline"
+          >
+            Login
+          </Link>
         </p>
 
-        <SocialLogin></SocialLogin>
+        <SocialLogin />
       </form>
     </div>
   );
