@@ -1,6 +1,8 @@
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
+import useAuth from "../../hooks/useAuth";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const RATE = {
   document: 60,
@@ -121,6 +123,13 @@ function calculateCost({ type, weight, senderRegion, receiverRegion }) {
   return cost;
 }
 
+// utils/generateTrackingId.js
+function generateTrackingId(prefix = "PF") {
+  const timestamp = Date.now().toString(36).toUpperCase(); // encodes current time
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase(); // adds randomness
+  return `${prefix}-${timestamp}-${random}`;
+}
+
 export default function AddParcel({ currentUser }) {
   const {
     register,
@@ -163,6 +172,9 @@ export default function AddParcel({ currentUser }) {
   useMemo(() => resetField("senderCenter"), [senderRegion, resetField]);
   useMemo(() => resetField("receiverCenter"), [receiverRegion, resetField]);
 
+  const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
+
   const onSubmit = () => {
     const vals = getValues();
     const cost = calculateCost({
@@ -195,13 +207,22 @@ export default function AddParcel({ currentUser }) {
                   ...vals,
                   cost,
                   creation_date: new Date().toISOString(),
+                  created_by: user?.email || "",
+                  delivery_status: "not_collected",
+                  payment_status: "unpaid",
+                  trackingId: generateTrackingId(),
                 };
                 console.log("Parcel data before saving:", payload);
-                // TODO: Save parcel to backend with creation_date
 
-                toast.dismiss(t.id);
-                toast.success("Parcel booked successfully!");
-                reset();
+                // API CALL
+                axiosSecure.post("/parcels", payload).then((res) => {
+                  console.log(res.data);
+                  if (res.data.insertedId) {
+                    toast.dismiss(t.id);
+                    toast.success("Parcel booked successfully!");
+                    reset();
+                  }
+                });
               }}
               className="flex-1 rounded-md bg-[#CFEA68] py-2 text-sm font-semibold text-[#0B3B36] hover:brightness-95 transition"
             >

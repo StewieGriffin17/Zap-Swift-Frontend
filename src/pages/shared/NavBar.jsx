@@ -24,6 +24,17 @@ const NavBar = () => {
 
   const navItems = (
     <>
+      {user && (
+        <li>
+          <NavLink
+            to="/dashboard"
+            className={navLinkClass}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Dashboard
+          </NavLink>
+        </li>
+      )}
       <li>
         <NavLink
           to="/services"
@@ -58,15 +69,6 @@ const NavBar = () => {
           onClick={() => setIsMenuOpen(false)}
         >
           Add Parcel
-        </NavLink>
-      </li>
-      <li className="lg:hidden">
-        <NavLink
-          to="/be-rider"
-          className={navLinkClass}
-          onClick={() => setIsMenuOpen(false)}
-        >
-          Be a Rider
         </NavLink>
       </li>
     </>
