@@ -3,11 +3,13 @@ import useAuth from "../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
 
 const MyParcels = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const [selectedParcel, setSelectedParcel] = useState(null);
+  const navigate = useNavigate();
 
   const {
     data: parcels = [],
@@ -60,6 +62,10 @@ const MyParcels = () => {
       console.error("Error deleting parcel:", error);
       Swal.fire("Error!", "Failed to delete parcel.", "error");
     }
+  };
+
+  const handlePayment = (id) => {
+    navigate(`/dashboard/payment/${id}`);
   };
 
   return (
@@ -134,10 +140,15 @@ const MyParcels = () => {
                       View
                     </button>
                     <button
-                      onClick={() => console.log("Pay logic later")}
-                      className="px-3 py-1.5 text-xs font-semibold text-white bg-green-600 rounded-md hover:bg-green-700"
+                      onClick={() => handlePayment(parcel._id)}
+                      disabled={parcel.payment_status === "paid"}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+                        parcel.payment_status === "paid"
+                          ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                          : "bg-green-600 hover:bg-green-700 text-white"
+                      }`}
                     >
-                      Pay
+                      {parcel.payment_status === "paid" ? "Paid" : "Pay"}
                     </button>
                     <button
                       onClick={() => handleDelete(parcel._id)}
