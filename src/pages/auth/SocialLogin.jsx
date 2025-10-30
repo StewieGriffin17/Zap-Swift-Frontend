@@ -1,19 +1,32 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router";
 import useAuth from "../../hooks/useAuth";
+import useAxios from "../../hooks/useAxios";
 
 const SocialLogin = () => {
   const { signInGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const axiosInstance = useAxios();
 
   // get the route user came from or default to home
   const from = location.state?.from?.pathname || "/";
 
   const handleGoogleSignin = () => {
     signInGoogle()
-      .then((res) => {
-        console.log("Google user:", res.user);
+      .then(async(res) => {
+        const user = res.user
+
+        const userInfo = {
+          email: user.email,
+          role: "user",
+          createdAt: new Date().toISOString(),
+          lastLogIn: new Date().toISOString(),
+        };
+
+        const userRes = await axiosInstance.post("/users", userInfo);
+        console.log(userRes.data);
+
         navigate(from, { replace: true });
       })
       .catch((error) => {

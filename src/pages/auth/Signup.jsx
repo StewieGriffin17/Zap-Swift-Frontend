@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router";
 import signup_img from "../../assets/image-upload-icon.png";
 import useAuth from "../../hooks/useAuth";
 import SocialLogin from "./SocialLogin";
+import axios from "axios";
+import useAxios from "../../hooks/useAxios";
 
 const Signup = () => {
   const {
@@ -12,14 +14,57 @@ const Signup = () => {
     formState: { errors },
   } = useForm();
 
-  const { createUser } = useAuth();
+  const { createUser, updateUserProfile } = useAuth();
   const navigate = useNavigate(); // navigation hook
+  const axiosInstance = useAxios();
+
+  const [image, setImage] = useState(null);
+  const [profilePic, setProfilePic] = useState("");
+
+  const handleImageChange = async (e) => {
+    const image = e.target.files[0];
+    if (image) {
+      setImage(URL.createObjectURL(image));
+    }
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const res = await axios.post(
+      `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_KEY}`,
+      formData
+    );
+
+    setProfilePic(res.data.data.url);
+  };
 
   const onSubmit = (data) => {
     createUser(data.email, data.password)
-      .then((result) => {
-        console.log("User created:", result.user);
-        // ✅ Redirect to login page after successful signup
+      .then(async (result) => {
+        const userInfo = {
+          email: data.email,
+          role: "user",
+          createdAt: new Date().toISOString(),
+          lastLogIn: new Date().toISOString(),
+        };
+
+        const userRes = await axiosInstance.post("/users", userInfo);
+        console.log(userRes.data);
+
+        const userProfile = {
+          displayName: data.name,
+          photoURL: profilePic,
+        };
+
+        updateUserProfile(userProfile)
+          .then(() => {
+            console.log("Profile Updated");
+          })
+          .catch((error) => {
+            console.error("error updating profile: ", error);
+          });
+
+        console.log(result);
         navigate("/login");
       })
       .catch((error) => {
@@ -35,14 +80,32 @@ const Signup = () => {
       </h1>
       <p className="text-[20px] text-gray-700">Register with Profast</p>
 
-      {/* Avatar placeholder */}
-      <div className="mt-5 mb-2">
-        <button className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
-          <img src={signup_img} alt="Upload icon" />
-        </button>
-      </div>
-
       <form onSubmit={handleSubmit(onSubmit)} className="mt-2">
+        {/* Avatar placeholder */}
+        <input
+          type="file"
+          accept="image/*"
+          id="avatarInput"
+          onChange={handleImageChange}
+          className="hidden"
+        />
+
+        {/* Upload Button */}
+        <label
+          htmlFor="avatarInput"
+          className="h-12 w-12 mt-5 mb-2 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+        >
+          {image ? (
+            <img
+              src={image}
+              alt="Uploaded avatar"
+              className="h-full w-full rounded-full object-cover"
+            />
+          ) : (
+            <img src={signup_img} alt="Upload icon" />
+          )}
+        </label>
+
         {/* Name */}
         <label className="block text-sm font-medium text-gray-800 mb-1">
           Name
